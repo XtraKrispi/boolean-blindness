@@ -1,3 +1,8 @@
+---
+title: Boolean Blindness
+theme: solarized
+---
+
 # Boolean Blindness
 
 ## The power of Abstract Data Types
