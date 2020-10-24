@@ -5,7 +5,7 @@ theme: solarized
 
 # Boolean Blindness
 
-## The power of Abstract Data Types
+## Using domain modelling to make your code (more) bug free
 
 ---
 
@@ -95,19 +95,19 @@ interface DontSaveName {
 }
 
 const saveId = {
-  type: "SAVEID"
+  type: "SAVEID",
 };
 
 const dontSaveId = {
-  type: "DONTSAVEID"
+  type: "DONTSAVEID",
 };
 
 const saveName = {
-  type: "SAVENAME"
+  type: "SAVENAME",
 };
 
 const dontSaveName = {
-  type: "DONTSAVENAME"
+  type: "DONTSAVENAME",
 };
 
 type IdSaveState = SaveId | DontSaveId;
