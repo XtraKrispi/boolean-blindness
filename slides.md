@@ -12,7 +12,7 @@ theme: solarized
 ## We've all seen functions like this before
 
 ```csharp
-public int GetVal(bool includeCalc1, bool includeCalc2)
+public int GetVal(bool param1, bool param2)
 ```
 
 ```csharp
