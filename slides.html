@@ -7,7 +7,7 @@
     <title>Boolean Blindness</title>
     <link rel="shortcut icon" href="./favicon.ico"/>
     <link rel="stylesheet" href="./dist/reveal.css" />
-    <link rel="stylesheet" href="./dist/theme/solarized.css" id="theme" />
+    <link rel="stylesheet" href="./dist/theme/night.css" id="theme" />
     <link rel="stylesheet" href="./css/highlight/zenburn.css" />
 
   </head>
@@ -17,19 +17,23 @@
 
 # Boolean Blindness
 
-## Using domain modelling to make your code (more) bug free
-</script></section><section  data-markdown><script type="text/template">
-## We've all seen functions like this before
+### Using domain modelling to make your code (more) bug free
 
-```csharp
-public int GetVal(bool param1, bool param2)
-```
+</script></section><section  data-markdown><script type="text/template"># About me
+
+<img src="images/goldie-pic.jpg" style="margin:0;background:0;border:0;box-shadow:none;" /> 
+
+* Lead Software Engineer, Analytics @ SPS Commerce
+* Passionate about functional programming
+* Always happy to teach, mentor, help
+</script></section><section  data-markdown><script type="text/template">
+## We've all seen function calls like this before
 
 ```csharp
 var x = GetVal(false, true);
 ```
 
-We can't know what the booleans mean without looking at the function definition
+How do we know which boolean is which without looking at the function definition? Did we get it right? What does `true` vs `false` mean for these arguments?
 </script></section><section  data-markdown><script type="text/template">
 ## What are booleans, really?
 
@@ -55,58 +59,94 @@ This would
 </script></section><section  data-markdown><script type="text/template">
 ## Language dependent
 
-Unfortunately, it is not very easy to fix in C#, but languages like **Typescript** and **F#** make this possible
+Unfortunately, it is not very easy to fix in languages like C# and Java, but languages like **Typescript** and **F#** make this possible
 </script></section><section  data-markdown><script type="text/template">
 ## Problem
 
 Let's look at the following function
 
 ```ts
-const Fn = (myData: Data, saveId: boolean, saveName: boolean) => {...}
+const fn = (myData: Data, saveId: boolean, saveName: boolean) => {...}
 ```
 
-We can disambiguate the booleans with _Abstract Data Types (aka Discriminated Unions)_
+We have to refer back to the function argument names in order to understand what the `booleans` mean, and even then it can still be confusing!
+
 </script></section><section  data-markdown><script type="text/template">
-# Wall of code incoming
+### We can disambiguate the booleans with _Abstract Data Types (aka Discriminated Unions)_
 </script></section><section  data-markdown><script type="text/template">
-## Typescript
+## What are Abstract Data Types?
+
+### First, we have to understand *Product*  types
+</script></section><section  data-markdown><script type="text/template">## What are Product Types?
+
+### The types you use everyday (classes, structs, tuples, records)
+</script></section><section  data-markdown><script type="text/template">## Why *Product*?
+
+Think of the number of possible values of a data type such as:
 
 ```ts
-interface SaveId {
-  type: "SAVEID";
+interface MyInterface {
+  myBool: boolean;
+  myOtherBool: number;
 }
+```
 
-interface DontSaveId {
-  type: "DONTSAVEID";
+How many different values are there for `MyInterface`?
+</script></section><section  data-markdown><script type="text/template">## Why *Product*?
+
+The number of possible values of `MyInterface`:
+* 2 * number of possibilities of `number`. Why?
+
+There is one boolean in this datatype, so the result is 2 (states in `boolean`) * incredibly high number (states in `number`)
+
+This is a *Product* type: we can find out all possible combinations by multiplying each field's possibilities with the others.
+</script></section><section  data-markdown><script type="text/template">## Why is this relevant?
+
+### We can think of Abstract Data Types as *Sum* types
+</script></section><section  data-markdown><script type="text/template">## Sum types
+
+When we declare an ADT, we give multiples *choices* for values:
+
+```ts
+type YesNoOrMaybe = "Yes" | "No" | "Maybe"
+```
+
+Notice the `|`, which acts as an `or`.  Now, what is the number of possibilities for this data type?
+
+It's 1 (`Yes`) + 1 (`No`) + 1 (`Maybe`).  The data type itself has three distinct possibilities.
+</script></section><section  data-markdown><script type="text/template">## Sum types
+
+We can also combine these with product types:
+
+```ts
+interface MyInterface {
+  yesOrNo: YesNoOrMaybe;
+  amount: number;
+  description: string | null;
 }
+```
 
-interface SaveName {
-  type: "SAVENAME";
+How many possible values exist for this datatype?
+</script></section><section  data-markdown><script type="text/template">## Sum types
+
+```ts
+interface MyInterface {
+  yesOrNo: YesNoOrMaybe;
+  hasAmount: boolean;
+  hasDescription: boolean | null;
 }
+```
 
-interface DontSaveName {
-  type: "DONTSAVENAME";
-}
+The answer is 18: 3 (`YesNoOrMaybe`) * 2 (`boolean`) * 3 (2 (`boolean`) + (`|`) 1 (`null`))
+</script></section><section  data-markdown><script type="text/template">
+## How can we utilize Abstract Data Types?
+</script></section><section  data-markdown><script type="text/template">## We can start by replacing booleans with more meaningful representations
+</script></section><section  data-markdown><script type="text/template">## Typescript
 
-const saveId = {
-  type: "SAVEID",
-};
+```ts
+type IdSaveState = "SaveId" | "DontSaveId";
 
-const dontSaveId = {
-  type: "DONTSAVEID",
-};
-
-const saveName = {
-  type: "SAVENAME",
-};
-
-const dontSaveName = {
-  type: "DONTSAVENAME",
-};
-
-type IdSaveState = SaveId | DontSaveId;
-
-type NameSaveState = SaveName | DontSaveName;
+type NameSaveState = "SaveName" | "DontSaveName";
 ```
 
 ```ts
@@ -115,7 +155,7 @@ const fn = (myData: Data, saveId: IdSaveState, saveName: NameSaveState) => {...}
 </script></section><section  data-markdown><script type="text/template">
 F#
 
-```
+```fsharp
 type IdSaveState =
 | SaveId | DontSaveId
 
@@ -123,19 +163,21 @@ type NameSaveState =
 | SaveName | DontSaveName
 ```
 
-```
+```fsharp
 let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
 ```
 </script></section><section  data-markdown><script type="text/template">
 ## Call sites
 
 ```ts
-fn(myData, dontSaveId, saveName);
+fn(myData, "DontSaveId", "SaveName");
 ```
 
-```
+```fsharp
 fn myData DontSaveId SaveName
 ```
+</script></section><section  data-markdown><script type="text/template">
+## Demo
 </script></section><section  data-markdown><script type="text/template">
 ### This has a ripple effect through the code:
 
@@ -155,7 +197,8 @@ interface PageState {
   errorMessage?: string;
   data: MyData;
 }
-```
+```</script></section><section  data-markdown><script type="text/template">
+### There is a problem with this that can lead to bugs in your code!
 </script></section><section  data-markdown><script type="text/template">
 ### This data model allows for `data`, `errorMessage`, AND `loading` to all be set at the same time...
 </script></section><section  data-markdown><script type="text/template">
@@ -168,6 +211,8 @@ _"But this **should** never happen"_
 What if we could make the impossible states **compiler** errors?
 
 What if we could ensure that only one of the three states is allowed at a time?
+
+We can reduce entire classes of bugs by modelling our data so that invalid states are **impossible**
 </script></section><section  data-markdown><script type="text/template">
 ## ADTs to the rescue
 
@@ -177,7 +222,7 @@ We can add data to our ADTs
 </script></section><section  data-markdown><script type="text/template">
 ## Modelling Data
 
-Here's how we model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
+Here's how we can model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
 
 ```
 type RemoteData<'data,'err> =
@@ -202,6 +247,8 @@ match state with
 | Success data -> ...
 | Failure error -> ...
 ```
+</script></section><section  data-markdown><script type="text/template">
+## Demo
 </script></section><section  data-markdown><script type="text/template">
 ## What have we learned
 
@@ -240,18 +287,62 @@ Now `Foo` is a `Data1` **OR** `Data2`
 ## What have we learned
 
 This allows us to represent data in ways we never thought possible, since we are able to combine them as much as we want!
+</script></section><section  data-markdown><script type="text/template">## Some more advanced data modelling
+</script></section><section  data-markdown><script type="text/template">## Let's continue to make invalid states impossible
+
+### Scenario: A user entry form that allows for a primary phone number or an email address for contact information
+</script></section><section  data-markdown><script type="text/template">## Some may model this like so (fsharp used for brevity)
+
+```fsharp
+type UserEntryForm = {
+  PrimaryPhone: string option
+  Email: string option
+}
+```
+
+*`Option` is similar to an explicit nullability type*
+</script></section><section  data-markdown><script type="text/template">
+Our business logic indicates that we can't have both a primary phone and an email, but in our data model we can easily represent that:
+
+```fsharp
+let myValue = { PrimaryPhone = Some "555-5555"
+                Email = Some "test@test.com" }
+
+let myOtherValue = { PrimaryPhone = None
+                     Email = None }
+```
+
+Our code now needs to handle these scenarios...</script></section><section  data-markdown><script type="text/template">## We can do better
+
+With ADTs, modelling this becomes trivial:
+
+```fsharp
+type ContactMethod = | PrimaryPhone of string | Email of string
+
+type UserEntryForm = {
+  ContactMethod: ContactMethod
+}
+```
+
+By doing it this way, it is not possible to have both, or even none of the contact methods. We have eliminated a bug from our code, using the compiler, without ever having to deal with an invalid case!
+</script></section><section  data-markdown><script type="text/template">## Let's see some more!
+
+### Live demo time
 </script></section><section  data-markdown><script type="text/template">
 ## Final Thoughts
 
-Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
+* Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
 
-When modelling data (especially in Typescript), think about impossible states and see if you can make them truly impossible
+* When modelling data (especially in Typescript or F#), think about impossible states and see if you can make them truly impossible
 
 We've barely scratched the surface of ADTs, there is so much more to explore!
 </script></section><section  data-markdown><script type="text/template">
 ## Finishing up
 
 If you want more information about ADTs, data modelling or anything, let me know!
+
+
+Michael Gold (Github: `XtraKrispi`) (Email: `XtraKrispi at gmail dot com`)
 </script></section><section  data-markdown><script type="text/template">
 # Questions?
 </script></section></div>
