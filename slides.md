@@ -9,17 +9,13 @@ theme: solarized
 
 ---
 
-## We've all seen functions like this before
-
-```csharp
-public int GetVal(bool param1, bool param2)
-```
+## We've all seen function calls like this before
 
 ```csharp
 var x = GetVal(false, true);
 ```
 
-We can't know what the booleans mean without looking at the function definition
+How do we know which boolean is which without looking at the function definition? Did we get it right? What does `true` vs `false` mean for these arguments?
 
 ---
 
@@ -64,55 +60,106 @@ Unfortunately, it is not very easy to fix in C#, but languages like **Typescript
 Let's look at the following function
 
 ```ts
-const Fn = (myData: Data, saveId: boolean, saveName: boolean) => {...}
+const fn = (myData: Data, saveId: boolean, saveName: boolean) => {...}
 ```
 
 We can disambiguate the booleans with _Abstract Data Types (aka Discriminated Unions)_
 
 ---
 
-# Wall of code incoming
+## What are Abstract Data Types?
+
+### First, we have to understand *Product* types
 
 ---
+## What are Product Types?
 
+### The types you use everyday (classes, structs, tuples, records)
+
+---
+## Why *Product*?
+
+Think of the number of possible values of a data type such as:
+
+```ts
+interface MyInterface {
+  myBool: boolean;
+  myOtherBool: boolean;
+}
+```
+
+How many different values are there for `MyInterface`?
+
+---
+## Why *Product*?
+
+The number of valid instances of `MyInterface` are exactly 4. Why?
+
+`boolean` has two possible values, `true` and `false`
+
+There are two booleans in this datatype, so the result is 2 (states in boolean) * 2 (booleans in the interface) = 4
+
+This is a *Product* type: we can find out all possible combinations by multiplying each fields possibilities with the others.
+
+---
+## Why is this relevant?
+
+### We can think of Abstract Data Types as *Sum* types
+
+---
+## Sum types
+
+When we declare an ADT, we give multiples *choices* for values:
+
+```ts
+type YesNoOrMaybe = "Yes" | "No" | "Maybe"
+```
+
+Notice the `|`, which acts as an `or`.  Now, what is the number of possibilities for this data type?
+
+It's 1 (`Yes`) + 1 (`No`) + 1 (`Maybe`).  The data type itself has three distinct possibilities.
+
+---
+## Sum types
+
+We can also combine these with product types:
+
+```ts
+interface MyInterface {
+  yesOrNo: YesNoOrMaybe;
+  amount: number;
+  description: string | null;
+}
+```
+
+How many possible values exist for this datatype?
+
+---
+## Sum types
+
+```ts
+interface MyInterface {
+  yesOrNo: YesNoOrMaybe;
+  hasAmount: boolean;
+  hasDescription: boolean | null;
+}
+```
+
+The answer is 18: 3 (`YesNoOrMaybe`) * 2 (`boolean`) * 3 (2 (`boolean`) + (`|`) 1 (`null`))
+
+--- 
+## How can we utilize Abstract Data Types?
+
+---
+## We can start by replacing booleans with more meaningful representations
+
+---
 ## Typescript
 
 ```ts
-interface SaveId {
-  type: "SAVEID";
-}
+type IdSaveState = "SaveId" | "DontSaveId";
 
-interface DontSaveId {
-  type: "DONTSAVEID";
-}
-
-interface SaveName {
-  type: "SAVENAME";
-}
-
-interface DontSaveName {
-  type: "DONTSAVENAME";
-}
-
-const saveId = {
-  type: "SAVEID",
-};
-
-const dontSaveId = {
-  type: "DONTSAVEID",
-};
-
-const saveName = {
-  type: "SAVENAME",
-};
-
-const dontSaveName = {
-  type: "DONTSAVENAME",
-};
-
-type IdSaveState = SaveId | DontSaveId;
-
-type NameSaveState = SaveName | DontSaveName;
+type NameSaveState = "SaveName" | "DontSaveName";
 ```
 
 ```ts
@@ -123,7 +170,7 @@ const fn = (myData: Data, saveId: IdSaveState, saveName: NameSaveState) => {...}
 
 F#
 
-```
+```fsharp
 type IdSaveState =
 | SaveId | DontSaveId
 
@@ -131,7 +178,7 @@ type NameSaveState =
 | SaveName | DontSaveName
 ```
 
-```
+```fsharp
 let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
 ```
 
@@ -140,12 +187,16 @@ let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
 ## Call sites
 
 ```ts
-fn(myData, dontSaveId, saveName);
+fn(myData, "DontSaveId", "SaveName");
 ```
 
-```
+```fsharp
 fn myData DontSaveId SaveName
 ```
+
+---
+
+## Demo
 
 ---
 
@@ -174,6 +225,9 @@ interface PageState {
   data: MyData;
 }
 ```
+---
+
+### There is a problem with this that can lead to bugs in your code!
 
 ---
 
@@ -193,6 +247,8 @@ What if we could make the impossible states **compiler** errors?
 
 What if we could ensure that only one of the three states is allowed at a time?
 
+We can reduce entire classes of bugs by modelling our data so that invalid states are **impossible**
+
 ---
 
 ## ADTs to the rescue
@@ -205,7 +261,7 @@ We can add data to our ADTs
 
 ## Modelling Data
 
-Here's how we model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
+Here's how we can model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
 
 ```
 type RemoteData<'data,'err> =
@@ -232,6 +288,10 @@ match state with
 | Success data -> ...
 | Failure error -> ...
 ```
+
+---
+
+## Demo
 
 ---
 
@@ -280,12 +340,62 @@ Now `Foo` is a `Data1` **OR** `Data2`
 This allows us to represent data in ways we never thought possible, since we are able to combine them as much as we want!
 
 ---
+## Some more advanced data modelling
+
+---
+## Let's continue to make invalid states impossible
+
+### Scenario: A user entry form that allows for a primary phone number or an email address for contact information
+
+---
+## Some may model this like so (fsharp used for brevity)
+
+```fsharp
+type UserEntryForm = {
+  PrimaryPhone: string option
+  Email: string option
+}
+```
+
+*`Option` is similar to an explicit nullability type*
+
+---
+
+Our business logic indicates that we can't have both a primary phone and an email, but in our data model we can easily represent that:
+
+```fsharp
+let myValue = { PrimaryPhone = Some "555-5555"; Email = Some "test@test.com"}
+```
+
+Our code now needs to handle this scenario... how would we do it?  Which value wins?
+
+---
+## We can do better
+
+With ADTs, modelling this becomes trivial:
+
+```fsharp
+type ContactMethod = | PrimaryPhone of string | Email of string
+
+type UserEntryForm = {
+  ContactMethod: ContactMethod
+}
+```
+
+By doing it this way, it is not possible to have both, or even none of the contact methods. We have eliminated a bug from our code, using the compiler, without ever having to deal with an invalid case!
+
+---
+## Let's see some more!
+
+### Live demo time
+
+---
 
 ## Final Thoughts
 
 Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
 
-When modelling data (especially in Typescript), think about impossible states and see if you can make them truly impossible
+When modelling data (especially in Typescript or F#), think about impossible states and see if you can make them truly impossible
 
 We've barely scratched the surface of ADTs, there is so much more to explore!
 
