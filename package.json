@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "reveal-md slides.md --static=_site"
+    "build": "reveal-md slides.md --static=_site --static-dirs=images"
   },
   "author": "",
   "license": "ISC",

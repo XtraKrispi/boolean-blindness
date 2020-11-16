@@ -1,11 +1,21 @@
 ---
 title: Boolean Blindness
-theme: solarized
+theme: night
 ---
 
 # Boolean Blindness
 
-## Using domain modelling to make your code (more) bug free
+### Using domain modelling to make your code (more) bug free
+
+
+---
+# About me
+
+<img src="images/goldie-pic.jpg" style="margin:0;background:0;border:0;box-shadow:none;" /> 
+
+* Lead Software Engineer, Analytics @ SPS Commerce
+* Passionate about functional programming
+* Always happy to teach, mentor, help
 
 ---
 
@@ -51,7 +61,7 @@ This would
 
 ## Language dependent
 
-Unfortunately, it is not very easy to fix in C#, but languages like **Typescript** and **F#** make this possible
+Unfortunately, it is not very easy to fix in languages like C# and Java, but languages like **Typescript** and **F#** make this possible
 
 ---
 
@@ -63,13 +73,18 @@ Let's look at the following function
 const fn = (myData: Data, saveId: boolean, saveName: boolean) => {...}
 ```
 
-We can disambiguate the booleans with _Abstract Data Types (aka Discriminated Unions)_
+We have to refer back to the function argument names in order to understand what the `booleans` mean, and even then it can still be confusing!
+
+
+---
+
+### We can disambiguate the booleans with _Abstract Data Types (aka Discriminated Unions)_
 
 ---
 
 ## What are Abstract Data Types?
 
-### First, we have to understand *Product* types
+### First, we have to understand *Product*  types
 
 ---
 ## What are Product Types?
@@ -84,7 +99,7 @@ Think of the number of possible values of a data type such as:
 ```ts
 interface MyInterface {
   myBool: boolean;
-  myOtherBool: boolean;
+  myOtherBool: number;
 }
 ```
 
@@ -93,13 +108,12 @@ How many different values are there for `MyInterface`?
 ---
 ## Why *Product*?
 
-The number of valid instances of `MyInterface` are exactly 4. Why?
+The number of possible values of `MyInterface`:
+* 2 * number of possibilities of `number`. Why?
 
-`boolean` has two possible values, `true` and `false`
+There is one boolean in this datatype, so the result is 2 (states in `boolean`) * incredibly high number (states in `number`)
 
-There are two booleans in this datatype, so the result is 2 (states in boolean) * 2 (booleans in the interface) = 4
-
-This is a *Product* type: we can find out all possible combinations by multiplying each fields possibilities with the others.
+This is a *Product* type: we can find out all possible combinations by multiplying each field's possibilities with the others.
 
 ---
 ## Why is this relevant?
@@ -147,7 +161,8 @@ interface MyInterface {
 
 The answer is 18: 3 (`YesNoOrMaybe`) * 2 (`boolean`) * 3 (2 (`boolean`) + (`|`) 1 (`null`))
 
---- 
+---
+
 ## How can we utilize Abstract Data Types?
 
 ---
@@ -364,11 +379,14 @@ type UserEntryForm = {
 Our business logic indicates that we can't have both a primary phone and an email, but in our data model we can easily represent that:
 
 ```fsharp
-let myValue = { PrimaryPhone = Some "555-5555"; Email = Some "test@test.com"}
+let myValue = { PrimaryPhone = Some "555-5555"
+                Email = Some "test@test.com" }
+
+let myOtherValue = { PrimaryPhone = None
+                     Email = None }
 ```
 
-Our code now needs to handle this scenario... how would we do it?  Which value wins?
-
+Our code now needs to handle these scenarios...
 ---
 ## We can do better
 
@@ -393,9 +411,9 @@ By doing it this way, it is not possible to have both, or even none of the conta
 
 ## Final Thoughts
 
-Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
+* Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
 
-When modelling data (especially in Typescript or F#), think about impossible states and see if you can make them truly impossible
+* When modelling data (especially in Typescript or F#), think about impossible states and see if you can make them truly impossible
 
 We've barely scratched the surface of ADTs, there is so much more to explore!
 
@@ -404,6 +422,9 @@ We've barely scratched the surface of ADTs, there is so much more to explore!
 ## Finishing up
 
 If you want more information about ADTs, data modelling or anything, let me know!
+
+
+Michael Gold (Github: `XtraKrispi`) (Email: `XtraKrispi at gmail dot com`)
 
 ---
 
