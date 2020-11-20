@@ -142,7 +142,7 @@ We can also combine these with product types:
 interface MyInterface {
   yesOrNo: YesNoOrMaybe;
   amount: number;
-  description: string | null;
+  hasDescription: boolean | null;
 }
 ```
 
