@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react";
 import styled from "styled-components";
 import { Checkbox } from "./Checkbox";
+import { failure, loading, notAsked, RemoteData, success } from "./RemoteData";
 
 const Container = styled.div`
   display: flex;
@@ -63,16 +64,20 @@ const Table = styled.table`
   }
 `;
 
+const LoadingIndicator = styled.div`
+  position: relative;
+  margin-top: 20px;
+  padding: 10px;
+
+  &:before {
+    font-size: 5px;
+  }
+`;
+
 interface Film {
   title: string;
   episode_id: number;
   release_date: string;
-}
-
-interface Model {
-  data: Film[];
-  isLoading: boolean;
-  errorMessage: string;
 }
 
 type Action<T> =
@@ -80,23 +85,25 @@ type Action<T> =
   | { type: "FAILED"; error: string }
   | { type: "SUCCESS"; data: T };
 
-const reducer = (state: Model, action: Action<Film[]>): Model => {
+const reducer = (
+  _state: RemoteData<Film[], string>,
+  action: Action<Film[]>
+): RemoteData<Film[], string> => {
   switch (action.type) {
     case "FAILED":
-      return { ...state, errorMessage: action.error };
+      return failure(action.error);
     case "LOADING":
-      return { ...state, isLoading: true };
+      return loading();
     case "SUCCESS":
-      return { ...state, data: action.data };
+      return success(action.data);
   }
 };
 
 export const Demo2 = () => {
-  const [model, dispatch] = useReducer(reducer, {
-    data: [],
-    isLoading: false,
-    errorMessage: "",
-  });
+  const [model, dispatch] = useReducer(
+    reducer,
+    notAsked() as RemoteData<Film[], string>
+  );
 
   const [shouldFail, setShouldFail] = useState(false);
 
@@ -108,12 +115,48 @@ export const Demo2 = () => {
         if (fail) {
           throw new Error("FAILED");
         }
-        setTimeout(() => {
-          dispatch({ type: "SUCCESS", data: d.results });
-        }, 3000);
+        dispatch({ type: "SUCCESS", data: d.results });
       })
       .catch((e) => dispatch({ type: "FAILED", error: e.toString() }));
   };
+
+  const content = ((model) => {
+    switch (model.type) {
+      case "FAILURE":
+        return <div>{model.error}</div>;
+      case "LOADING":
+        return <LoadingIndicator className="loading"></LoadingIndicator>;
+      case "NOTASKED":
+        return null;
+      case "SUCCESS":
+        if (model.data.length > 0) {
+          return (
+            <DataPanel>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Episode #</th>
+                    <th>Release Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {model.data.map((d, i) => (
+                    <tr key={i}>
+                      <td>{d.title}</td>
+                      <td>{d.episode_id}</td>
+                      <td>{d.release_date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </DataPanel>
+          );
+        } else {
+          return <div>NO DATA</div>;
+        }
+    }
+  })(model);
 
   return (
     <Container>
@@ -124,31 +167,7 @@ export const Demo2 = () => {
           label="Fail the fetch?"
           onChange={() => setShouldFail(!shouldFail)}
         />
-        {model.isLoading && <div>LOADING</div>}
-        {model.errorMessage && <div>{model.errorMessage}</div>}
-        {!!model.data.length && (
-          <DataPanel>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Episode #</th>
-                  <th>Release Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {model.data.map((d) => (
-                  <tr>
-                    <td>{d.title}</td>
-                    <td>{d.episode_id}</td>
-                    <td>{d.release_date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </DataPanel>
-        )}
-        {!model.data.length && <DataPanel>NO DATA</DataPanel>}
+        {content}
       </InnerPanel>
     </Container>
   );
