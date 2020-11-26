@@ -63,6 +63,16 @@ const Table = styled.table`
   }
 `;
 
+const LoadingIndicator = styled.div`
+  position: relative;
+  margin-top: 20px;
+  padding: 10px;
+
+  &:before {
+    font-size: 5px;
+  }
+`;
+
 interface Film {
   title: string;
   episode_id: number;
@@ -124,7 +134,7 @@ export const Demo2 = () => {
           label="Fail the fetch?"
           onChange={() => setShouldFail(!shouldFail)}
         />
-        {model.isLoading && <div>LOADING</div>}
+        {model.isLoading && <LoadingIndicator className="loading" />}
         {model.errorMessage && <div>{model.errorMessage}</div>}
         {!!model.data.length && (
           <DataPanel>
@@ -148,7 +158,6 @@ export const Demo2 = () => {
             </Table>
           </DataPanel>
         )}
-        {!model.data.length && <DataPanel>NO DATA</DataPanel>}
       </InnerPanel>
     </Container>
   );
