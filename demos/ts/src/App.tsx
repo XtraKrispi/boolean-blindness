@@ -34,6 +34,14 @@ const ListItem = styled.li`
   position: relative;
 `;
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+
 function App() {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -44,7 +52,7 @@ function App() {
   ];
 
   return (
-    <div>
+    <Container>
       <div>
         <ListView>
           {components.map(([txt, _], idx) => (
@@ -59,7 +67,7 @@ function App() {
         </ListView>
       </div>
       <div>{components[activeTab][1]}</div>
-    </div>
+    </Container>
   );
 }
 
