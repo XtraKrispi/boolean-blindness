@@ -16,7 +16,6 @@ const Display = styled.p`
   background: #ecf0f3;
   box-shadow: inset 14px 14px 20px #d0d3d6, inset -14px -14px 20px #ffffff;
 `;
-
 // | STYLING STUFF ENDS
 
 const giveSpeech = (txt: string, yelling: boolean, questioning: boolean) => {

@@ -1,5 +1,16 @@
 import React, { useReducer } from "react";
+import { RadioButton } from "./RadioButton";
 import { CenteredDisplay, Container, TextBox } from "./Styles";
+import styled from "styled-components";
+
+const Aligned = styled.div`
+  display: flex;
+  justify-content: center;
+
+  label:first-child {
+    margin-right: 10px;
+  }
+`;
 
 type ContactMethod = "phone" | "email";
 
@@ -61,35 +72,43 @@ export const Demo3 = () => {
               dispatch({ type: "UPDATE_LASTNAME", lastName: e.target.value })
             }
           />
-          <TextBox
-            type="radio"
-            name="contact"
-            value="email"
-            checked={model.contactMethod === "email"}
-            onClick={() =>
-              dispatch({ type: "CHANGE_CONTACTMETHOD", contactMethod: "email" })
-            }
-          />
-          <TextBox
-            type="radio"
-            name="contact"
-            value="phone"
-            checked={model.contactMethod === "phone"}
-            onClick={() =>
-              dispatch({ type: "CHANGE_CONTACTMETHOD", contactMethod: "phone" })
-            }
-          />
+          <Aligned>
+            <RadioButton
+              name="contact"
+              label="Email"
+              checked={model.contactMethod === "email"}
+              onChange={() =>
+                dispatch({
+                  type: "CHANGE_CONTACTMETHOD",
+                  contactMethod: "email",
+                })
+              }
+            />
+            <RadioButton
+              name="contact"
+              label="Phone"
+              checked={model.contactMethod === "phone"}
+              onChange={() =>
+                dispatch({
+                  type: "CHANGE_CONTACTMETHOD",
+                  contactMethod: "phone",
+                })
+              }
+            />
+          </Aligned>
           {model.contactMethod === "email" ? (
-            <input
+            <TextBox
               type="email"
+              placeholder="Email"
               value={model.emailAddress ? model.emailAddress : ""}
               onChange={(e) =>
                 dispatch({ type: "UPDATE_EMAIL", email: e.target.value })
               }
             />
           ) : (
-            <input
-              type="email"
+            <TextBox
+              type="text"
+              placeholder="Phone Number"
               value={model.phoneNumber ? model.phoneNumber : ""}
               onChange={(e) =>
                 dispatch({

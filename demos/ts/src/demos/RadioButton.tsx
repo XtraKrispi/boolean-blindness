@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-const CheckboxInput = styled.input`
+const RadioButtonInput = styled.input`
   position: absolute;
   left: -9999px;
 `;
 
-const CheckboxLabel = styled.label`
+const RadioButtonLabel = styled.label`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,19 +26,23 @@ const CheckboxLabel = styled.label`
       : null}
 `;
 
-export const Checkbox: React.FC<{
+export const RadioButton: React.FC<{
   label: string;
+  name: string;
   checked: boolean;
   onChange?: () => void;
-}> = ({ label, onChange, checked }) => {
+}> = ({ label, name, onChange, checked }) => {
   return (
-    <CheckboxLabel checked={checked}>
-      <CheckboxInput
-        type="checkbox"
-        checked={checked}
-        onChange={() => (onChange ? onChange() : null)}
-      />
-      {label}
-    </CheckboxLabel>
+    <>
+      <RadioButtonLabel checked={checked}>
+        <RadioButtonInput
+          type="radio"
+          checked={checked}
+          name={name}
+          onChange={() => (onChange ? onChange() : null)}
+        />
+        {label}
+      </RadioButtonLabel>
+    </>
   );
 };

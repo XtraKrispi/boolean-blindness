@@ -4,6 +4,7 @@ import { Demo1 } from "./demos/Demo1";
 import { Demo2 } from "./demos/Demo2";
 import styled from "styled-components";
 import { Demo3 } from "./demos/Demo3";
+import { Demo4 } from "./demos/Demo4";
 
 const ListView = styled.ul`
   list-style-type: none;
@@ -40,6 +41,9 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
+  & > div:first-child {
+    margin-bottom: 30px;
+  }
 `;
 
 function App() {
@@ -49,6 +53,7 @@ function App() {
     ["Demo 1", <Demo1 />],
     ["Demo 2", <Demo2 />],
     ["Demo 3", <Demo3 />],
+    ["Demo 4", <Demo4 />],
   ];
 
   return (

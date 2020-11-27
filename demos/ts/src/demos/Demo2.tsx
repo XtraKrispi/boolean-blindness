@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react";
 import styled from "styled-components";
 import { Checkbox } from "./Checkbox";
+import { Button, DataPanel, LoadingIndicator } from "./Styles";
 
 const Container = styled.div`
   display: flex;
@@ -18,25 +19,6 @@ const InnerPanel = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const DataPanel = styled.div`
-  margin-top: 30px;
-  border-radius: 10px;
-  padding: 20px;
-  background: #ecf0f3;
-  box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #ffffff;
-`;
-
-const Button = styled.div`
-  cursor: pointer;
-  user-select: none;
-  border-radius: 91px;
-  background: linear-gradient(145deg, #fdffff, #d4d8db);
-  box-shadow: 5px 5px 10px #b3b6b9, -5px -5px 10px #ffffff;
-  border: 0;
-  padding: 10px;
-  margin-bottom: 20px;
 `;
 
 const Table = styled.table`
@@ -60,16 +42,6 @@ const Table = styled.table`
     tr:nth-child(even) {
       background-color: #fff;
     }
-  }
-`;
-
-const LoadingIndicator = styled.div`
-  position: relative;
-  margin-top: 20px;
-  padding: 10px;
-
-  &:before {
-    font-size: 5px;
   }
 `;
 
@@ -128,7 +100,12 @@ export const Demo2 = () => {
   return (
     <Container>
       <InnerPanel>
-        <Button onClick={() => makeRequest(shouldFail)}>Load Data</Button>
+        <Button
+          onClick={() => makeRequest(shouldFail)}
+          style={{ marginBottom: "20px" }}
+        >
+          Load Data
+        </Button>
         <Checkbox
           checked={shouldFail}
           label="Fail the fetch?"
