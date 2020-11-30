@@ -43,7 +43,7 @@ How do we know which boolean is which without looking at the function definition
 
 - Very easy to name booleans ambiguously, making it unclear what `true` means
 </script></section><section  data-markdown><script type="text/template">
-## Has anyone ever had a bug where they had the wrong state for a boolean, or put it in the wrong spot in a function call?
+### Has anyone ever had a bug where they had the wrong state for a boolean, or put it in the wrong spot in a function call?
 </script></section><section  data-markdown><script type="text/template">
 ## What if we could add some meaning to our binary data types?
 
@@ -153,29 +153,13 @@ type NameSaveState = "SaveName" | "DontSaveName";
 const fn = (myData: Data, saveId: IdSaveState, saveName: NameSaveState) => {...}
 ```
 </script></section><section  data-markdown><script type="text/template">
-F#
 
-```fsharp
-type IdSaveState =
-| SaveId | DontSaveId
-
-type NameSaveState =
-| SaveName | DontSaveName
-```
-
-```fsharp
-let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
-```
-</script></section><section  data-markdown><script type="text/template">
 ## Call sites
 
 ```ts
 fn(myData, "DontSaveId", "SaveName");
 ```
 
-```fsharp
-fn myData DontSaveId SaveName
-```
 </script></section><section  data-markdown><script type="text/template">
 ## Demo
 </script></section><section  data-markdown><script type="text/template">
@@ -195,7 +179,7 @@ fn myData DontSaveId SaveName
 interface PageState {
   loading: boolean;
   errorMessage?: string;
-  data: MyData;
+  data?: MyData;
 }
 ```</script></section><section  data-markdown><script type="text/template">
 ### There is a problem with this that can lead to bugs in your code!
@@ -222,17 +206,17 @@ We can add data to our ADTs
 </script></section><section  data-markdown><script type="text/template">
 ## Modelling Data
 
-Here's how we can model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
+Here's how we can model Remote Data in Typescript :
 
-```
-type RemoteData<'data,'err> =
-| NotAsked
-| Loading
-| Success of 'data
-| Error of 'err
+```ts
+type RemoteData<TData,TError> =
+| { type: "NOT_ASKED" }
+| { type: "LOADING" }
+| { type: "SUCCESS", data: TData }
+| { type: "FAILURE", error: TError }
 ```
 
-```
+```ts
 type MyState = RemoteData<MyData, string>
 ```
 </script></section><section  data-markdown><script type="text/template">
@@ -240,12 +224,21 @@ type MyState = RemoteData<MyData, string>
 
 And now where you need to build your UI, or do your business logic, it looks like this:
 
-```
-match state with
-| NotAsked -> ...
-| Loading -> ...
-| Success data -> ...
-| Failure error -> ...
+```ts
+switch (state.type) {
+  case "NOT_ASKED": 
+    ...
+    break;
+  case "LOADING":
+    ...
+    break;
+  case "SUCCESS":
+    ...
+    break;
+  case "FAILURE":
+    ...
+    break;
+}
 ```
 </script></section><section  data-markdown><script type="text/template">
 ## Demo
@@ -291,36 +284,34 @@ This allows us to represent data in ways we never thought possible, since we are
 </script></section><section  data-markdown><script type="text/template">## Let's continue to make invalid states impossible
 
 ### Scenario: A user entry form that allows for a primary phone number or an email address for contact information
-</script></section><section  data-markdown><script type="text/template">## Some may model this like so (fsharp used for brevity)
+</script></section><section  data-markdown><script type="text/template">## Some may model this like so
 
-```fsharp
-type UserEntryForm = {
-  PrimaryPhone: string option
-  Email: string option
+```ts
+interface UserEntryForm {
+  primaryPhone: string | null;
+  email: string | null
 }
 ```
-
-*`Option` is similar to an explicit nullability type*
 </script></section><section  data-markdown><script type="text/template">
 Our business logic indicates that we can't have both a primary phone and an email, but in our data model we can easily represent that:
 
-```fsharp
-let myValue = { PrimaryPhone = Some "555-5555"
-                Email = Some "test@test.com" }
+```ts
+const myValue = { primaryPhone: "555-5555", email: "test@test.com" }
 
-let myOtherValue = { PrimaryPhone = None
-                     Email = None }
+const myOtherValue = { primaryPhone: null, email: null }
 ```
 
 Our code now needs to handle these scenarios...</script></section><section  data-markdown><script type="text/template">## We can do better
 
 With ADTs, modelling this becomes trivial:
 
-```fsharp
-type ContactMethod = | PrimaryPhone of string | Email of string
+```ts
+type ContactMethod = 
+    { type: "PRIMARY_PHONE", phoneNumber: string } 
+  | { type: "EMAIL", email: string}
 
-type UserEntryForm = {
-  ContactMethod: ContactMethod
+interface UserEntryForm {
+  contactMethod: ContactMethod
 }
 ```
 
@@ -340,11 +331,11 @@ We've barely scratched the surface of ADTs, there is so much more to explore!
 ## Finishing up
 
 If you want more information about ADTs, data modelling or anything, let me know!
-
-
-Michael Gold (Github: `XtraKrispi`) (Email: `XtraKrispi at gmail dot com`)
 </script></section><section  data-markdown><script type="text/template">
 # Questions?
+
+<img src="images/GitHub-Mark-Light-64px.png" style="margin:0; height: 64px; width: 64px;background:0;border:0;box-shadow:none;" />  `XtraKrispi`
+
 </script></section></div>
     </div>
 
