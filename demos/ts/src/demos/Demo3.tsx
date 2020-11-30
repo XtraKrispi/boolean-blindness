@@ -1,16 +1,7 @@
 import React, { useReducer } from "react";
+import { Aligned } from "./Demo3.styles";
 import { RadioButton } from "./RadioButton";
 import { CenteredDisplay, Container, TextBox } from "./Styles";
-import styled from "styled-components";
-
-const Aligned = styled.div`
-  display: flex;
-  justify-content: center;
-
-  label:first-child {
-    margin-right: 10px;
-  }
-`;
 
 type ContactMethod = "phone" | "email";
 

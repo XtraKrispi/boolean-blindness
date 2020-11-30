@@ -39,7 +39,7 @@ How do we know which boolean is which without looking at the function definition
 
 ---
 
-## Has anyone ever had a bug where they had the wrong state for a boolean, or put it in the wrong spot in a function call?
+### Has anyone ever had a bug where they had the wrong state for a boolean, or put it in the wrong spot in a function call?
 
 ---
 
@@ -183,21 +183,6 @@ const fn = (myData: Data, saveId: IdSaveState, saveName: NameSaveState) => {...}
 
 ---
 
-F#
-
-```fsharp
-type IdSaveState =
-| SaveId | DontSaveId
-
-type NameSaveState =
-| SaveName | DontSaveName
-```
-
-```fsharp
-let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
-```
-
----
 
 ## Call sites
 
@@ -205,9 +190,6 @@ let fn (myData: Data) (saveId: IdSaveState) (saveName: NameSaveState) = ...
 fn(myData, "DontSaveId", "SaveName");
 ```
 
-```fsharp
-fn myData DontSaveId SaveName
-```
 
 ---
 
@@ -237,7 +219,7 @@ fn myData DontSaveId SaveName
 interface PageState {
   loading: boolean;
   errorMessage?: string;
-  data: MyData;
+  data?: MyData;
 }
 ```
 ---
@@ -276,17 +258,17 @@ We can add data to our ADTs
 
 ## Modelling Data
 
-Here's how we can model Remote Data in F# (it's much more terse, but it's easy in Typescript as well):
+Here's how we can model Remote Data in Typescript :
 
-```
-type RemoteData<'data,'err> =
-| NotAsked
-| Loading
-| Success of 'data
-| Error of 'err
+```ts
+type RemoteData<TData,TError> =
+| { type: "NOT_ASKED" }
+| { type: "LOADING" }
+| { type: "SUCCESS", data: TData }
+| { type: "FAILURE", error: TError }
 ```
 
-```
+```ts
 type MyState = RemoteData<MyData, string>
 ```
 
@@ -296,12 +278,21 @@ type MyState = RemoteData<MyData, string>
 
 And now where you need to build your UI, or do your business logic, it looks like this:
 
-```
-match state with
-| NotAsked -> ...
-| Loading -> ...
-| Success data -> ...
-| Failure error -> ...
+```ts
+switch (state.type) {
+  case "NOT_ASKED": 
+    ...
+    break;
+  case "LOADING":
+    ...
+    break;
+  case "SUCCESS":
+    ...
+    break;
+  case "FAILURE":
+    ...
+    break;
+}
 ```
 
 ---
@@ -363,27 +354,23 @@ This allows us to represent data in ways we never thought possible, since we are
 ### Scenario: A user entry form that allows for a primary phone number or an email address for contact information
 
 ---
-## Some may model this like so (fsharp used for brevity)
+## Some may model this like so
 
-```fsharp
-type UserEntryForm = {
-  PrimaryPhone: string option
-  Email: string option
+```ts
+interface UserEntryForm {
+  primaryPhone: string | null;
+  email: string | null
 }
 ```
-
-*`Option` is similar to an explicit nullability type*
 
 ---
 
 Our business logic indicates that we can't have both a primary phone and an email, but in our data model we can easily represent that:
 
-```fsharp
-let myValue = { PrimaryPhone = Some "555-5555"
-                Email = Some "test@test.com" }
+```ts
+const myValue = { primaryPhone: "555-5555", email: "test@test.com" }
 
-let myOtherValue = { PrimaryPhone = None
-                     Email = None }
+const myOtherValue = { primaryPhone: null, email: null }
 ```
 
 Our code now needs to handle these scenarios...
@@ -392,11 +379,13 @@ Our code now needs to handle these scenarios...
 
 With ADTs, modelling this becomes trivial:
 
-```fsharp
-type ContactMethod = | PrimaryPhone of string | Email of string
+```ts
+type ContactMethod = 
+    { type: "PRIMARY_PHONE", phoneNumber: string } 
+  | { type: "EMAIL", email: string}
 
-type UserEntryForm = {
-  ContactMethod: ContactMethod
+interface UserEntryForm {
+  contactMethod: ContactMethod
 }
 ```
 
@@ -423,9 +412,9 @@ We've barely scratched the surface of ADTs, there is so much more to explore!
 
 If you want more information about ADTs, data modelling or anything, let me know!
 
-
-Michael Gold (Github: `XtraKrispi`) (Email: `XtraKrispi at gmail dot com`)
-
 ---
 
 # Questions?
+
+<img src="images/GitHub-Mark-Light-64px.png" style="margin:0; height: 64px; width: 64px;background:0;border:0;box-shadow:none;" />  `XtraKrispi`
+

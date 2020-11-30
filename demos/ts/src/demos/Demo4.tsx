@@ -1,5 +1,4 @@
 import React, { useReducer } from "react";
-import { serialize } from "v8";
 import { Carousel, CarouselView, makeCarousel } from "./Carousel";
 import {
   failure,

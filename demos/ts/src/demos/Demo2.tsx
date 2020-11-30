@@ -1,49 +1,7 @@
 import React, { useReducer, useState } from "react";
-import styled from "styled-components";
 import { Checkbox } from "./Checkbox";
+import { Container, InnerPanel, Table } from "./Demo2.styles";
 import { Button, DataPanel, LoadingIndicator } from "./Styles";
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  color: #777;
-`;
-
-const InnerPanel = styled.div`
-  width: 30vw;
-  margin-top: 20px;
-  border-radius: 30px;
-  padding: 40px;
-  background: #ecf0f3;
-  box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Table = styled.table`
-  color: #555;
-  border-spacing: 0;
-  td {
-    border: 0;
-  }
-
-  thead {
-    th {
-      padding-bottom: 10px;
-    }
-  }
-
-  tbody {
-    td {
-      padding: 10px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #fff;
-    }
-  }
-`;
 
 interface Film {
   title: string;
