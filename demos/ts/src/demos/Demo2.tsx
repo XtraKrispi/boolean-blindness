@@ -1,7 +1,7 @@
 import React, { useReducer, useState } from "react";
-import { Checkbox } from "./Checkbox";
-import { Container, InnerPanel, Table } from "./Demo2.styles";
-import { Button, DataPanel, LoadingIndicator } from "./Styles";
+import { Checkbox } from "./helpers/Checkbox";
+import { Container, InnerPanel, Table } from "./helpers/Demo2.styles";
+import { Button, DataPanel, LoadingIndicator } from "./helpers/Styles";
 
 interface Film {
   title: string;

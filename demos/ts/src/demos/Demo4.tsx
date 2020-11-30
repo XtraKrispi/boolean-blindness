@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { Carousel, CarouselView, makeCarousel } from "./Carousel";
+import { Carousel, CarouselView, makeCarousel } from "./helpers/Carousel";
 import {
   failure,
   loading,
@@ -7,7 +7,7 @@ import {
   notAsked,
   RemoteData,
   success,
-} from "./RemoteData";
+} from "./helpers/RemoteData";
 import {
   Button,
   CenteredDisplay,
@@ -16,7 +16,7 @@ import {
   Link,
   LoadingIndicator,
   TextBox,
-} from "./Styles";
+} from "./helpers/Styles";
 
 interface Photo {
   id: string;

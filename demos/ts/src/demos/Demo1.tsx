@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Checkbox } from "./Checkbox";
-import { Display } from "./Demo1.styles";
-import { CenteredDisplay, Container, TextBox } from "./Styles";
+import { Checkbox } from "./helpers/Checkbox";
+import { Display } from "./helpers/Demo1.styles";
+import { CenteredDisplay, Container, TextBox } from "./helpers/Styles";
 
 const giveSpeech = (txt: string, yelling: boolean, questioning: boolean) => {
   return `${yelling ? txt.toUpperCase() : txt}${questioning ? "?" : ""}`;
