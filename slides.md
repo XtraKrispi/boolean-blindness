@@ -462,7 +462,7 @@ By doing it this way, it is not possible to have both, or even none of the conta
 
 * Next time you want to reach for a boolean, think twice. If there's another way to model your data, try it out!
 
-* When modelling data (especially in Typescript or F#), think about impossible states and see if you can make them truly impossible
+* When modelling data, think about impossible states and see if you can make them truly impossible
 
 We've barely scratched the surface of ADTs, there is so much more to explore!
 
