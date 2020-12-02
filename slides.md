@@ -69,7 +69,7 @@ This would
 
 ## Language dependent
 
-Unfortunately, it is not very easy to fix in languages like C# and Java, but languages like **Typescript** and **F#** make this possible
+Unfortunately, while possible in languages like C# and Java, it is a much more tedious process, but languages like **Typescript** and **F#** make this much easier
 
 ---
 <!-- .slide: data-background="https://source.unsplash.com/random/1920x1080?landscape,nature,outdoors&sig=9" data-background-opacity="0.3" -->
@@ -480,3 +480,7 @@ If you want more information about ADTs, data modelling or anything, let me know
 
 <img src="images/GitHub-Mark-Light-64px.png" style="margin:0; height: 64px; width: 64px;background:0;border:0;box-shadow:none;" />  `XtraKrispi`
 
+References:
+
+  * F# For Fun and Profit (https://fsharpforfunandprofit.com/)
+  * Richard Feldman - Making Impossible States Impossible (https://www.youtube.com/watch?v=IcgmSRJHu_8)
