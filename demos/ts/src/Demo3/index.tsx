@@ -1,7 +1,6 @@
 import React, { useReducer } from "react";
-import { Aligned } from "./helpers/Demo3.styles";
-import { RadioButton } from "./helpers/RadioButton";
-import { CenteredDisplay, Container, TextBox } from "./helpers/Styles";
+import { Aligned } from "./Demo3.styles";
+import { RadioButton, CenteredDisplay, Container, TextBox } from "../helpers";
 
 type ContactMethod = "phone" | "email";
 

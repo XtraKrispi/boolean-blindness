@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Demo1 } from "./demos/Demo1";
-import { Demo2 } from "./demos/Demo2";
+import { Demo1 } from "./Demo1";
+import { Demo2 } from "./Demo2";
 import styled from "styled-components";
-import { Demo3 } from "./demos/Demo3";
-import { Demo4 } from "./demos/Demo4";
+import { Demo3 } from "./Demo3";
+import { Demo4 } from "./Demo4";
 
 const ListView = styled.ul`
   list-style-type: none;

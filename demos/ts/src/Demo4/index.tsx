@@ -1,13 +1,6 @@
 import React, { useReducer } from "react";
-import { Carousel, CarouselView, makeCarousel } from "./helpers/Carousel";
-import {
-  failure,
-  loading,
-  map,
-  notAsked,
-  RemoteData,
-  success,
-} from "./helpers/RemoteData";
+import { Carousel, makeCarousel } from "./Carousel";
+import { CarouselView } from "./CarouselView";
 import {
   Button,
   CenteredDisplay,
@@ -16,7 +9,14 @@ import {
   Link,
   LoadingIndicator,
   TextBox,
-} from "./helpers/Styles";
+  failure,
+  loading,
+  map,
+  notAsked,
+  RemoteData,
+  success,
+  isNotAsked,
+} from "../helpers";
 
 interface Photo {
   id: string;
@@ -32,7 +32,7 @@ const fetchPhotos = (query: string): Promise<Photo[]> => {
   )
     .then((resp) => resp.json())
     .then((res) =>
-      res.results.map((r: any) => ({
+      res.results.slice(0, 5).map((r: any) => ({
         id: r.id,
         description: r.description,
         url: r.urls.small,
@@ -59,7 +59,13 @@ const reducer = (state: State, action: Action): State => {
     case "LOADING":
       return { ...state, photos: loading() };
     case "SUCCESS":
-      return { photos: success(makeCarousel(action.data)), searchText: "" };
+      if (!action.data.length) {
+        return { photos: success(null), searchText: "" };
+      }
+      return {
+        photos: success(makeCarousel(action.data[0], action.data.slice(1))),
+        searchText: "",
+      };
     case "FAILURE":
       return { ...state, photos: failure(action.error) };
     case "ON_SEARCH_TEXT_CHANGED":
@@ -99,7 +105,7 @@ export const Demo4 = () => {
         return (
           <CarouselView
             carousel={photos.data}
-            render={(item) => (
+            render={(item: Photo) => (
               <figure style={{ textAlign: "center" }}>
                 <img alt={item.description} src={item.url} />
                 <figcaption>
@@ -109,7 +115,7 @@ export const Demo4 = () => {
                 </figcaption>
               </figure>
             )}
-            onChange={(newPhotos) =>
+            onChange={(newPhotos: Carousel<Photo>) =>
               dispatch({ type: "PHOTOS_UPDATED", photos: newPhotos })
             }
           />
@@ -140,7 +146,7 @@ export const Demo4 = () => {
         <Button inline onClick={() => makeQuery(searchText)}>
           Search
         </Button>
-        <DataPanel>{photosView}</DataPanel>
+        {isNotAsked(photos) ? null : <DataPanel>{photosView}</DataPanel>}
       </Container>
     </CenteredDisplay>
   );

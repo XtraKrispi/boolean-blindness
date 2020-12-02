@@ -27,6 +27,12 @@ export function failure<TSuccess, TFailure>(
   return { type: FAILURE, error: err };
 }
 
+export function isNotAsked<TSuccess, TFailure>(
+  data: RemoteData<TSuccess, TFailure>
+): data is { type: typeof NOTASKED } {
+  return data.type === NOTASKED;
+}
+
 export function isSuccess<TSuccess, TFailure>(
   data: RemoteData<TSuccess, TFailure>
 ): data is { type: typeof SUCCESS; data: TSuccess } {

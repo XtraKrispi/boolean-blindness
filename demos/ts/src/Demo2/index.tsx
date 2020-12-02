@@ -1,7 +1,6 @@
 import React, { useReducer, useState } from "react";
-import { Checkbox } from "./helpers/Checkbox";
-import { Container, InnerPanel, Table } from "./helpers/Demo2.styles";
-import { Button, DataPanel, LoadingIndicator } from "./helpers/Styles";
+import { Checkbox, Button, DataPanel, LoadingIndicator } from "../helpers";
+import { Container, InnerPanel, Table } from "./Demo2.styles";
 
 interface Film {
   title: string;
@@ -49,7 +48,14 @@ export const Demo2 = () => {
           throw new Error("FAILED");
         }
         setTimeout(() => {
-          dispatch({ type: "SUCCESS", data: d.results });
+          dispatch({
+            type: "SUCCESS",
+            data: d.results.map(({ title, episode_id, release_date }: any) => ({
+              title,
+              episode_id,
+              release_date,
+            })),
+          });
         }, 3000);
       })
       .catch((e) => dispatch({ type: "FAILED", error: e.toString() }));
@@ -93,6 +99,9 @@ export const Demo2 = () => {
             </Table>
           </DataPanel>
         )}
+        <div>
+          <pre>{JSON.stringify(model, null, 2)}</pre>
+        </div>
       </InnerPanel>
     </Container>
   );
