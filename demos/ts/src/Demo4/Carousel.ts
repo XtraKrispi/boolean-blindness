@@ -1,78 +1,73 @@
-interface ICarousel<T> {
-  prevElements: T[];
-  selectedElement: T;
-  nextElements: T[];
+export interface Carousel<T> {
+  _prevElements: T[];
+  _selectedElement: T;
+  _nextElements: T[];
 }
-
-export type Carousel<T> = { type: "CAROUSEL"; carousel: ICarousel<T> };
 
 export function makeCarousel<T>(first: T, rest: T[]): Carousel<T> {
   return {
-    type: "CAROUSEL",
-    carousel: {
-      prevElements: [],
-      selectedElement: first,
-      nextElements: rest,
-    },
+    _prevElements: [],
+    _selectedElement: first,
+    _nextElements: rest,
   };
 }
 
 export function hasPrev<T>(carousel: Carousel<T>): boolean {
-  return !!carousel.carousel.prevElements.length;
+  return !!carousel._prevElements.length;
 }
 
 export function hasNext<T>(carousel: Carousel<T>): boolean {
-  return !!carousel.carousel.nextElements.length;
+  return !!carousel._nextElements.length;
 }
 
 export function currentElement<T>(carousel: Carousel<T>): T {
-  return carousel.carousel.selectedElement;
+  return carousel._selectedElement;
 }
 
 export function toList<T>(carousel: Carousel<T>): T[] {
   return [
-    ...carousel.carousel.prevElements,
-    carousel.carousel.selectedElement,
-    ...carousel.carousel.nextElements,
+    ...carousel._prevElements,
+    carousel._selectedElement,
+    ...carousel._nextElements,
   ];
 }
 
 export function next<T>({
-  carousel: { prevElements, selectedElement, nextElements },
+  _prevElements: prevElements,
+  _selectedElement: selectedElement,
+  _nextElements: nextElements,
 }: Carousel<T>): Carousel<T> {
   if (!nextElements.length) {
     return {
-      type: "CAROUSEL",
-      carousel: { prevElements, selectedElement, nextElements },
+      _prevElements: prevElements,
+      _selectedElement: selectedElement,
+      _nextElements: nextElements,
     };
   }
 
   return {
-    type: "CAROUSEL",
-    carousel: {
-      prevElements: prevElements.concat([selectedElement]),
-      selectedElement: nextElements[0],
-      nextElements: nextElements.slice(1),
-    },
+    _prevElements: prevElements.concat([selectedElement]),
+    _selectedElement: nextElements[0],
+    _nextElements: nextElements.slice(1),
   };
 }
 
 export function previous<T>({
-  carousel: { prevElements, selectedElement, nextElements },
+  _prevElements: prevElements,
+  _selectedElement: selectedElement,
+  _nextElements: nextElements,
 }: Carousel<T>): Carousel<T> {
   if (!prevElements.length) {
     return {
-      type: "CAROUSEL",
-      carousel: { prevElements, selectedElement, nextElements },
+      _prevElements: prevElements,
+      _selectedElement: selectedElement,
+      _nextElements: nextElements,
     };
   }
 
   return {
-    type: "CAROUSEL",
-    carousel: {
-      prevElements: prevElements.slice(0, -1),
-      selectedElement: prevElements[prevElements.length - 1],
-      nextElements: [selectedElement].concat(nextElements),
-    },
+    _prevElements: prevElements.slice(0, -1),
+    _selectedElement: prevElements[prevElements.length - 1],
+    _nextElements: [selectedElement].concat(nextElements),
   };
 }
