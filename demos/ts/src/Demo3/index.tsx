@@ -2,13 +2,13 @@ import React, { useReducer } from "react";
 import { Aligned } from "./Demo3.styles";
 import { RadioButton, CenteredDisplay, Container, TextBox } from "../helpers";
 
-type ContactMethod = "phone" | "email";
+type ContactMethod =
+  | { type: "phone"; phoneNumber: string }
+  | { type: "email"; email: string };
 
 interface Model {
   firstName: string;
   lastName: string;
-  phoneNumber: string | null;
-  emailAddress: string | null;
   contactMethod: ContactMethod;
 }
 
@@ -24,13 +24,28 @@ const reducer = (state: Model, action: Action): Model => {
     case "CHANGE_CONTACTMETHOD":
       return { ...state, contactMethod: action.contactMethod };
     case "UPDATE_EMAIL":
-      return { ...state, emailAddress: action.email };
+      if (state.contactMethod.type === "email") {
+        return {
+          ...state,
+          contactMethod: { ...state.contactMethod, email: action.email },
+        };
+      }
+      return state;
     case "UPDATE_FIRSTNAME":
       return { ...state, firstName: action.firstName };
     case "UPDATE_LASTNAME":
       return { ...state, lastName: action.lastName };
     case "UPDATE_PHONENUMBER":
-      return { ...state, phoneNumber: action.phoneNumber };
+      if (state.contactMethod.type === "phone") {
+        return {
+          ...state,
+          contactMethod: {
+            ...state.contactMethod,
+            phoneNumber: action.phoneNumber,
+          },
+        };
+      }
+      return state;
   }
 };
 
@@ -38,9 +53,7 @@ export const Demo3 = () => {
   const [model, dispatch] = useReducer(reducer, {
     firstName: "",
     lastName: "",
-    phoneNumber: null,
-    emailAddress: null,
-    contactMethod: "email",
+    contactMethod: { type: "email", email: "" },
   });
   return (
     <CenteredDisplay>
@@ -66,31 +79,31 @@ export const Demo3 = () => {
             <RadioButton
               name="contact"
               label="Email"
-              checked={model.contactMethod === "email"}
+              checked={model.contactMethod.type === "email"}
               onChange={() =>
                 dispatch({
                   type: "CHANGE_CONTACTMETHOD",
-                  contactMethod: "email",
+                  contactMethod: { type: "email", email: "" },
                 })
               }
             />
             <RadioButton
               name="contact"
               label="Phone"
-              checked={model.contactMethod === "phone"}
+              checked={model.contactMethod.type === "phone"}
               onChange={() =>
                 dispatch({
                   type: "CHANGE_CONTACTMETHOD",
-                  contactMethod: "phone",
+                  contactMethod: { type: "phone", phoneNumber: "" },
                 })
               }
             />
           </Aligned>
-          {model.contactMethod === "email" ? (
+          {model.contactMethod.type === "email" ? (
             <TextBox
               type="email"
               placeholder="Email"
-              value={model.emailAddress ? model.emailAddress : ""}
+              value={model.contactMethod.email}
               onChange={(e) =>
                 dispatch({ type: "UPDATE_EMAIL", email: e.target.value })
               }
@@ -99,7 +112,7 @@ export const Demo3 = () => {
             <TextBox
               type="text"
               placeholder="Phone Number"
-              value={model.phoneNumber ? model.phoneNumber : ""}
+              value={model.contactMethod.phoneNumber}
               onChange={(e) =>
                 dispatch({
                   type: "UPDATE_PHONENUMBER",

@@ -1,5 +1,15 @@
 import React, { useReducer, useState } from "react";
-import { Checkbox, Button, DataPanel, LoadingIndicator } from "../helpers";
+import {
+  Checkbox,
+  Button,
+  DataPanel,
+  LoadingIndicator,
+  RemoteData,
+  failure,
+  loading,
+  success,
+  notAsked,
+} from "../helpers";
 import { Container, InnerPanel, Table } from "./Demo2.styles";
 
 interface Film {
@@ -9,9 +19,7 @@ interface Film {
 }
 
 interface Model {
-  data: Film[];
-  isLoading: boolean;
-  errorMessage: string;
+  data: RemoteData<Film[], string>;
 }
 
 type Action<T> =
@@ -19,22 +27,20 @@ type Action<T> =
   | { type: "FAILED"; error: string }
   | { type: "SUCCESS"; data: T };
 
-const reducer = (state: Model, action: Action<Film[]>): Model => {
+const reducer = (_state: Model, action: Action<Film[]>): Model => {
   switch (action.type) {
     case "FAILED":
-      return { ...state, errorMessage: action.error };
+      return { data: failure(action.error) };
     case "LOADING":
-      return { ...state, isLoading: true };
+      return { data: loading() };
     case "SUCCESS":
-      return { ...state, data: action.data };
+      return { data: success(action.data) };
   }
 };
 
 export const Demo2 = () => {
   const [model, dispatch] = useReducer(reducer, {
-    data: [],
-    isLoading: false,
-    errorMessage: "",
+    data: notAsked() as RemoteData<Film[], string>,
   });
 
   const [shouldFail, setShouldFail] = useState(false);
@@ -61,6 +67,42 @@ export const Demo2 = () => {
       .catch((e) => dispatch({ type: "FAILED", error: e.toString() }));
   };
 
+  const view = (model: Model) => {
+    switch (model.data.type) {
+      case "NOTASKED":
+        return null;
+      case "LOADING":
+        return <LoadingIndicator className="loading" />;
+      case "FAILURE":
+        return <div>{model.data.error}</div>;
+      case "SUCCESS":
+        return (
+          !!model.data.data.length && (
+            <DataPanel>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Episode #</th>
+                    <th>Release Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {model.data.data.map((d) => (
+                    <tr>
+                      <td>{d.title}</td>
+                      <td>{d.episode_id}</td>
+                      <td>{d.release_date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </DataPanel>
+          )
+        );
+    }
+  };
+
   return (
     <Container>
       <InnerPanel>
@@ -75,30 +117,7 @@ export const Demo2 = () => {
           label="Fail the fetch?"
           onChange={() => setShouldFail(!shouldFail)}
         />
-        {model.isLoading && <LoadingIndicator className="loading" />}
-        {model.errorMessage && <div>{model.errorMessage}</div>}
-        {!!model.data.length && (
-          <DataPanel>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Episode #</th>
-                  <th>Release Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {model.data.map((d) => (
-                  <tr>
-                    <td>{d.title}</td>
-                    <td>{d.episode_id}</td>
-                    <td>{d.release_date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </DataPanel>
-        )}
+        {view(model)}
         <div>
           <pre>{JSON.stringify(model, null, 2)}</pre>
         </div>
